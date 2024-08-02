@@ -1,26 +1,31 @@
+import AppName from "./components/AppName";
 import AddTodo from "./components/AddTodo";
-import Title from "./components/Title";
+import TodoItems from "./components/TodoItems";
+import "./App.css";
+import { useState } from "react";
+import WelcomeMessage from "./components/WelcomeMessage";
 
 function App() {
-  return (
-    <center class='todo-container'>
-      <Title />
-      <AddTodo />
-      
-      <div class="container text-center">
-        <div class="row">
-          <div class="col-6">
-            Breakfast
-          </div>
-          <div class="col-4">
-            4/6/2002
-          </div>
-          <div class="col-2">
-          <button type="button" class="btn btn-danger">Delete</button>
-          </div>
-        </div>
+  const [todoArr, setTodoArr] = useState([]);
 
-      </div>
+  const AddTodoButton = (input, date) => {
+    console.log(input, date);
+    const newArr = [{name: input, dueDate: date}, ...todoArr];
+    setTodoArr(newArr);
+  }
+
+  const deleteTodo = (name) => {
+    console.log(name);
+    const newArr = todoArr.filter(item => (item.name !== name))
+    setTodoArr(newArr);
+  }
+
+  return (
+    <center className="todo-container">
+      <AppName />
+      <AddTodo handleClick = {AddTodoButton} />
+      {todoArr.length === 0 && <WelcomeMessage />}
+      <TodoItems arr={todoArr} onDelete={deleteTodo}></TodoItems>
     </center>
   );
 }
