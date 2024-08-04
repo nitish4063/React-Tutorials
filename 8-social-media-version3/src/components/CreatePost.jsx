@@ -13,13 +13,33 @@ function CreatePost() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log("sending req to server");
+
+    fetch("https://dummyjson.com/posts/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId: userId.current.value,
+        title: postTitle.current.value,
+        body: postBody.current.value,
+        reactions: reactions.current.value,
+        tags: tags.current.value.split(" "),
+      }),
+    })
+      .then((res) => res.json())
+      .then((resObj) => {
+        console.log("response received", resObj);
+        addPost(resObj);
+      });
+
+    /*
     addPost(
       userId.current.value,
       postTitle.current.value,
       postBody.current.value,
       reactions.current.value,
       tags.current.value.split(" ")
-    );
+    ); */
 
     userId.current.value = "";
     postTitle.current.value = "";

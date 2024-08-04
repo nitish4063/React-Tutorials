@@ -1,42 +1,44 @@
-import React, { act, createContext, useReducer } from "react";
+import React, {
+  act,
+  createContext,
+  useReducer,
+  useState,
+  useEffect,
+} from "react";
 
 export const PostList = createContext({
   postList: [],
+  fetching: false,
   addPost: () => {},
-  addInitialPosts: () => {},
   deletePost: () => {},
 });
 
 const postListReducer = (currPostList, action) => {
   let newPosList = currPostList;
+
   if (action.type === "DELETE_POST") {
     newPosList = currPostList.filter(
       (post) => post.id !== action.payload.postId
     );
   } else if (action.type === "ADD_POST") {
-    newPosList = [action.payload, ...currPostList];
-  } 
-  else if (action.type === "ADD_INITIAL_POSTS") {
+    newPosList = [action.payload.postObj, ...currPostList];
+  } else if (action.type === "ADD_INITIAL_POSTS") {
     newPosList = action.payload.posts;
   }
+
   return newPosList;
 };
 
 const PostListProvider = (props) => {
-  const [postList, dispatchPostList] = useReducer(
-    postListReducer,
-    []
-  );
+  const [postList, dispatchPostList] = useReducer(postListReducer, []);
 
-  const addPost = (UserID, PostTitle, PostBody, Reactions, Tags) => {
+  const [fetching, setFetching] = useState(false);
+
+  const addPost = (postObj) => {
     dispatchPostList({
       type: "ADD_POST",
       payload: {
-        id: Date.now(),
-        title: PostTitle,
-        body: PostBody,
-        reactions: Reactions,
-        tags: Tags,
+        postObj,
       },
     });
   };
@@ -60,13 +62,36 @@ const PostListProvider = (props) => {
     });
   };
 
+  useEffect(() => {
+    setFetching(true);
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    fetch("https://dummyjson.com/posts", { signal })
+      .then((res) => res.json())
+      .then((res) => {
+        addInitialPosts(res.posts);
+        setFetching(false);
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          console.log("Fetch aborted");
+        } else {
+          console.error("Fetch error:", err);
+        }
+      });
+
+    return () => {
+      // console.log("cleaning up useEffect");
+      controller.abort();
+    };
+  }, []);
+
   return (
-    <PostList.Provider value={{ postList, addPost, addInitialPosts, deletePost }}>
+    <PostList.Provider value={{ postList, fetching, addPost, deletePost }}>
       {props.children}
     </PostList.Provider>
   );
 };
-
-
 
 export default PostListProvider;
