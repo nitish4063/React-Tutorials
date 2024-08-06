@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 
 function Home() {
   const allItems = useSelector((store) => store.items);
-  console.log("HOME PAGE items from store", allItems);
+  // console.log("HOME PAGE items from store", allItems);
 
   return (
     <main>

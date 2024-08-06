@@ -12,7 +12,7 @@ function FetchItems() {
     (store) => store.fetchStatus
   );
 
-  console.log(fetchDone, currentlyFetching);
+  // console.log(fetchDone, currentlyFetching);
 
   const dispatch = useDispatch();
 
@@ -33,15 +33,22 @@ function FetchItems() {
         dispatch(markFetchingFinished());
         dispatch(addInitialItems(items.items));
         // console.log("items from server", items.items);
+      })
+      .catch((err) => {
+        if (err.name === "AbortError") {
+          // console.log("Fetch aborted");
+        } else {
+          console.error("Fetch error:", err);
+        }
       });
+
+    return () => {
+      // console.log("cleaning up useEffect");
+      controller.abort();
+    };
   }, [fetchDone, currentlyFetching]);
 
-  return (
-    <div>
-      fetch: {fetchDone}
-      curr: {currentlyFetching}
-    </div>
-  );
+  return <></>;
 }
 
 export default FetchItems;
