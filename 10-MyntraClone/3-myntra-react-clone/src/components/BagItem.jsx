@@ -1,6 +1,15 @@
 import React from "react";
+import { AiFillDelete } from "react-icons/ai";
+import { useDispatch } from "react-redux";
+import { removeFromBag } from "../store/BagSlice";
 
 function BagItem({ item }) {
+  const dispatch = useDispatch();
+
+  const handleDelete = () => {
+    dispatch(removeFromBag(item.id));
+  };
+
   return (
     <div className="bag-item-container">
       <div className="item-left-part">
@@ -26,11 +35,11 @@ function BagItem({ item }) {
         </div>
       </div>
 
-      <div className="remove-from-cart" onClick={() => console.log("clicked")}>
-        X
+      <div className="remove-from-cart" onClick={handleDelete}>
+        <AiFillDelete />
       </div>
     </div>
-  ); 
+  );
 }
 
 export default BagItem;
