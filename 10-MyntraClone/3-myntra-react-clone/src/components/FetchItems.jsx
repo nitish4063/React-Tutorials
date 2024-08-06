@@ -24,31 +24,17 @@ function FetchItems() {
 
     // console.log("Request to server for initial data");
 
-    // dispatch(markFetchingStarted());
+    dispatch(markFetchingStarted());
 
-    fetch("http://localhost:8080/items", { signal })
-      .then((res) => {
-        res.json();
-      })
+    fetch("http://localhost:8080/items")
+      .then((res) => res.json())
       .then((items) => {
-        // dispatch(markFetchDone());
-        // dispatch(markFetchingFinished());
-        dispatch(addInitialItems(items));
-        console.log("items from server", items);
-      })
-      .catch((err) => {
-        if (err.name === "AbortError") {
-          //   console.log("Fetch aborted");
-        } else {
-          console.error("Fetch error:", err);
-        }
+        dispatch(markFetchDone());
+        dispatch(markFetchingFinished());
+        dispatch(addInitialItems(items.items));
+        // console.log("items from server", items.items);
       });
-
-    return () => {
-      //   console.log("cleaning up useEffect");
-      controller.abort();
-    };
-  }, []);
+  }, [fetchDone, currentlyFetching]);
 
   return (
     <div>
